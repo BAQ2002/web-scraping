@@ -3,5 +3,5 @@ class Produto:
         self.titulo = titulo
         self.preco = preco
 
-    def __repr__(self):
-        return f"Produto(titulo={self.titulo}, preco={self.preco})"
+    def __str__(self):
+        return f"Produto(titulo='{self.titulo}', preco='{self.preco}')"
