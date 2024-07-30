@@ -1,5 +1,6 @@
 from amazon import Amazon
 from web_driver_config import WebDriverConfig
+from controller.database import DatabaseManager
 
 
 def main():
@@ -14,6 +15,16 @@ def main():
 
     # Listar produtos analidos no site Amazon.com.br
     amazon_scraper.listar_produtos()
+
+    # Recupera os produtos analisados
+    produtos = amazon_scraper.produtos_analisados()
+
+    if produtos:
+        # Salva os produtos no banco de dados
+        db_manager = DatabaseManager()
+        for produto in produtos:
+            db_manager.salvar_produto(produto)
+        db_manager.fechar()
 
 
 if __name__ == '__main__':
