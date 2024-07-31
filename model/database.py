@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime, date
 from model.produto import Produto
 from colorama import Fore, Style, init
+from enviar_email import enviar_email
 
 
 # Inicializa o colorama
@@ -121,19 +122,25 @@ class DatabaseManager:
             data_hora, titulo, preco_atual, preco_alvo = resultado
             preco_atual = float(preco_atual)
             preco_alvo = float(preco_alvo)
-
+            # print(Fore.GREEN + 'Email enviado' + Style.RESET_ALL)
             if preco_alvo is not None and preco_atual <= preco_alvo:
-                print(f"O preço alvo foi atingido para o produto '{titulo_produto}'!!! Preço atual: R${preco_atual}. Preço alvo: R${preco_alvo}.")
+                print(Fore.GREEN + f"O preço alvo foi atingido para o produto '{titulo_produto}'!!! Preço atual: R${preco_atual}. Preço alvo: R${preco_alvo}." + Style.RESET_ALL)
+                produto = Produto(titulo_produto, preco_atual)
+                produto.set_preco_alvo(preco_alvo)
+                return produto
             else:
-                print(
-                    f"O produto '{titulo_produto}' ainda acima do preço alvo. Preço atual: R${preco_atual}. Preço alvo: R${preco_alvo}.")
+                print(Fore.LIGHTRED_EX + f"O produto '{titulo_produto}' ainda acima do preço alvo. Preço atual: R${preco_atual}. Preço alvo: R${preco_alvo}." + Style.RESET_ALL)
+                return None
         else:
             print(f"Nenhum preço encontrado para o produto '{titulo_produto}'.")
+            return None
 
     def executa_verificacao_de_preco_alvo(self, produtos):
         print('\n*** VERIFICA SE O PREÇO ALVO FOI ATINGIDO ***\n')
         for produto in produtos:
-            self.verifica_preco_alvo(produto.titulo)
+            preco_alvo_atingido = self.verifica_preco_alvo(produto.titulo)
+            if preco_alvo_atingido:
+                enviar_email(preco_alvo_atingido)
 
     def fechar(self):
         self.connection.close()

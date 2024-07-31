@@ -11,7 +11,7 @@ def analise_de_precos(produtos):
     # Busca o menor preço do dia
     db_manager.buscar_menor_preco_dia(produtos)
 
-    # Verifica se algum produto atingiu o preço alvo apos o
+    # Verifica se algum produto analisado atingiu o preço alvo
     db_manager.executa_verificacao_de_preco_alvo(produtos)
 
     db_manager.fechar()
