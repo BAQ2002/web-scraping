@@ -1,6 +1,6 @@
-from amazon import Amazon
+from controller.amazon import Amazon
 from web_driver_config import WebDriverConfig
-from controller.database import DatabaseManager
+from model.database import DatabaseManager
 
 
 def analise_de_precos(produtos):

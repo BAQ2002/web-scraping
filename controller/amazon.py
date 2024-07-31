@@ -2,7 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
-from links import links_amazon
+from controller.links import links_amazon
 from model.produto import Produto
 from colorama import Fore, Style, init
 
