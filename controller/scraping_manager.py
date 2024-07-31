@@ -1,0 +1,1 @@
+# Futuramente implementar um gerenciador

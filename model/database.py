@@ -123,7 +123,7 @@ class DatabaseManager:
             preco_alvo = float(preco_alvo)
 
             if preco_alvo is not None and preco_atual <= preco_alvo:
-                print(f"O preço alvo foi atingido para o produto '{titulo_produto}'!!! Preço atual: R${preco_atual}")
+                print(f"O preço alvo foi atingido para o produto '{titulo_produto}'!!! Preço atual: R${preco_atual}. Preço alvo: R${preco_alvo}.")
             else:
                 print(
                     f"O produto '{titulo_produto}' ainda acima do preço alvo. Preço atual: R${preco_atual}. Preço alvo: R${preco_alvo}.")

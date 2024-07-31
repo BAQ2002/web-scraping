@@ -8,3 +8,8 @@ links_amazon = [
     "https://www.amazon.com.br/gp/product/B07CK3V7CN/ref=ox_sc_act_title_13?smid=A1ZZFT5FULY4LN&psc=1",
     "https://www.amazon.com.br/gp/product/B077P8D5Q5/ref=ox_sc_act_title_14?smid=A1ZZFT5FULY4LN&psc=1",
 ]
+
+links_kabum = [
+    "https://www.kabum.com.br/produto/193500/memoria-ram-kingston-fury-beast-16gb-2x8gb-3200mhz-ddr4-cl16-preto-kf432c16bbk2-16",
+
+]
