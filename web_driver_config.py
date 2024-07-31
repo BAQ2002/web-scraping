@@ -8,5 +8,5 @@ class WebDriverConfig:
         # Configuração do driver
         service = Service(executable_path="chromedriver.exe")
         driver = webdriver.Chrome(service=service)
-        driver.set_window_size(700, 800)
+        driver.set_window_size(750, 900)
         return driver

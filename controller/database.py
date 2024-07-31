@@ -1,6 +1,11 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime, date
 from model.produto import Produto
+from colorama import Fore, Style, init
+
+
+# Inicializa o colorama
+init(autoreset=True)
 
 
 class DatabaseManager:
@@ -13,14 +18,15 @@ class DatabaseManager:
             self.connection.execute("""
                 CREATE TABLE IF NOT EXISTS produtos (
                     id INTEGER PRIMARY KEY,
-                    titulo TEXT NOT NULL UNIQUE
+                    titulo TEXT NOT NULL UNIQUE,
+                    preco_alvo REAL
                 )
             """)
             self.connection.execute("""
                 CREATE TABLE IF NOT EXISTS precos (
                     id INTEGER PRIMARY KEY,
                     produto_id INTEGER,
-                    preco TEXT NOT NULL,
+                    preco REAL NOT NULL,
                     data_hora TEXT NOT NULL,
                     FOREIGN KEY (produto_id) REFERENCES produtos (id)
                 )
@@ -35,7 +41,8 @@ class DatabaseManager:
             if produto_existente:
                 produto_id = produto_existente[0]
             else:
-                cursor.execute("INSERT INTO produtos (titulo) VALUES (?)", (produto.titulo,))
+                preco_alvo = float(input(f"Digite o preço alvo para o produto '{produto.titulo}'. Valor atual: R$: {produto.preco} (ex: 99.99): ").replace(',', '.'))
+                cursor.execute("INSERT INTO produtos (titulo, preco_alvo) VALUES (?, ?)", (produto.titulo, preco_alvo))
                 produto_id = cursor.lastrowid
 
             self.salvar_preco(produto_id, produto.preco)
@@ -48,8 +55,85 @@ class DatabaseManager:
                 (produto_id, preco, data_hora)
             )
 
-    # Consultar o banco e buscar pelo menor preço do dia com isso printar o nome do produto, o valor atual e sua variação.
-    # Quero poder definir um valor a ser pago pelo produto. E que se o preco atual atingir um valor menor ou igual print(O valor definido foi atinido.)
+    def definir_preco_alvo(self, titulo_produto, preco_alvo):
+        with self.connection:
+            cursor = self.connection.cursor()
+            cursor.execute("UPDATE produtos SET preco_alvo = ? WHERE titulo = ?", (preco_alvo, titulo_produto))
+            self.connection.commit()
+
+    def buscar_menor_preco_dia(self, produtos):
+        print('\n*** OS MENORES PREÇOES DO DIA ***\n')
+        for produto in produtos:
+            if not isinstance(produto, Produto):
+                raise ValueError("Esperado um objeto da classe Produto.")
+
+            titulo_produto = produto.titulo
+
+            query = """
+            SELECT 
+                pr.data_hora, p.titulo, pr.preco
+            FROM 
+                produtos p
+            INNER JOIN precos pr 
+                ON p.id = pr.produto_id
+            WHERE 
+                p.titulo = ?
+                AND DATE(pr.data_hora) = DATE('now', 'localtime')
+            ORDER BY 
+                pr.preco ASC
+            LIMIT 1
+            """
+
+            with self.connection:
+                cursor = self.connection.cursor()
+                try:
+                    cursor.execute(query, (titulo_produto,))
+                    resultado = cursor.fetchone()
+                except sqlite3.Error as e:
+                    print(f"Erro ao executar a consulta: {e}")
+                    return None
+
+            if resultado:
+                print(Fore.BLUE + f'{resultado[1]}' + Style.RESET_ALL)
+                print(f"Preço: {resultado[2]}\nData e Hora: {resultado[0]}\n")
+            else:
+                print(f"\nNenhum preço encontrado para o produto '{titulo_produto}' hoje.\n")
+
+    def verifica_preco_alvo(self, titulo_produto):
+        with self.connection:
+            cursor = self.connection.cursor()
+            cursor.execute("""
+            SELECT 
+                data_hora, titulo, preco, preco_alvo
+            FROM 
+                produtos INNER JOIN precos 
+                    ON produtos.id = precos.produto_id
+            WHERE 
+                produtos.titulo = ?
+                AND DATE(precos.data_hora) = DATE('now', 'localtime')
+            ORDER BY 
+                precos.data_hora DESC
+            LIMIT 1;
+            """, (titulo_produto,))
+            resultado = cursor.fetchone()
+
+        if resultado:
+            data_hora, titulo, preco_atual, preco_alvo = resultado
+            preco_atual = float(preco_atual)
+            preco_alvo = float(preco_alvo)
+
+            if preco_alvo is not None and preco_atual <= preco_alvo:
+                print(f"O preço alvo foi atingido para o produto '{titulo_produto}'!!! Preço atual: R${preco_atual}")
+            else:
+                print(
+                    f"O produto '{titulo_produto}' ainda acima do preço alvo. Preço atual: R${preco_atual}. Preço alvo: R${preco_alvo}.")
+        else:
+            print(f"Nenhum preço encontrado para o produto '{titulo_produto}'.")
+
+    def executa_verificacao_de_preco_alvo(self, produtos):
+        print('\n*** VERIFICA SE O PREÇO ALVO FOI ATINGIDO ***\n')
+        for produto in produtos:
+            self.verifica_preco_alvo(produto.titulo)
 
     def fechar(self):
         self.connection.close()

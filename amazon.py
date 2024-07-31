@@ -55,20 +55,15 @@ class Amazon:
                 EC.presence_of_element_located(
                     (By.CLASS_NAME, 'a-price-whole'))
             ).text
-        except Exception as e:
-            print(Fore.RED + f"Error fetching whole price from URL {url}: {e}" + Style.RESET_ALL)
-            return None
-
-        try:
             price_fraction = WebDriverWait(self.driver, 10).until(
                 EC.presence_of_element_located(
-                    (By.XPATH, '//*[@id="corePrice_feature_div"]/div/div/span[1]/span[2]/span[3]'))
+                    (By.CLASS_NAME, 'a-price-fraction'))
             ).text
+            price_str = price_whole.replace('.', '') + '.' + price_fraction
+            price = float(price_str)
         except Exception as e:
-            print(Fore.RED + f"Error fetching fractional price from URL {url}: {e}" + Style.RESET_ALL)
+            print(Fore.RED + f"Error fetching price from URL {url}: {e}" + Style.RESET_ALL)
             return None
-
-        price = f"{price_whole},{price_fraction}"
 
         return Produto(titulo=title, preco=price)
 
