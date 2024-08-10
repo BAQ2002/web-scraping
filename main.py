@@ -5,7 +5,7 @@ from model.database import DatabaseManager
 
 
 def analise_de_precos(produtos):
-    # Abalisa os precos e seus comportamentos
+    # Analisa os precos e seus comportamentos
     db_manager = DatabaseManager()
 
     # Busca o menor preço do dia
