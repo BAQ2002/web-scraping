@@ -1,3 +1,12 @@
+# Refatoração 
+## Duplicated Code (Código Duplicado)
+
+Nas classes controller/kabum e controller/amazon foram identificados codigos duplicados. Solução: criar uma interface que é implementada por ambas as classes, modificando apenas o necessario para o funcionamento exclusivo de cada uma.
+
+## Conclusão
+
+A análise do código revelou uma implementação de alta qualidade, com estruturação clara, bom uso de práticas de programação e adesão a princípios de design. Durante a refatoração, o único bad smell identificado foi o Duplicated Code (Código Duplicado).
+
 # Projeto de Web Scraping
 
 Este projeto realiza web scraping de produtos em sites como Amazon e KaBuM!, analisando os preços e verificando se algum produto atingiu o preço alvo. Os resultados são armazenados em um banco de dados para futuras análises.
