@@ -1,8 +1,8 @@
+from controller.scraper import Scraper
 from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
 from controller.links import links_kabum
 from model.produto import Produto
 from colorama import Fore, Style, init
@@ -12,22 +12,8 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 
-class Kabum:
-    def __init__(self, driver):
-        self.driver = driver
-        self.produtos = []
-
-    # Iterando sobre a lista de links e imprimindo as informações dos produtos
-    def scrape_products(self):
-        for url in links_kabum:
-            product_info = self.fetch_product_info(url)
-            if product_info:
-                self.produtos.append(product_info)
-                print(Fore.YELLOW + f'{product_info}' + Style.RESET_ALL)
-            time.sleep(2)  # Pausa para evitar problemas de carregamento
-
-        self.driver.quit()
-
+# Implementação do scraper para Kabum
+class KabumScraper(Scraper):
     def fetch_product_info(self, url):
         self.driver.get(url)
 
@@ -56,7 +42,6 @@ class Kabum:
                 return None
 
         try:
-            # Limpeza e conversão do preço
             price_str = price_str.replace('R$', '').replace('.', '').replace(',', '.').strip()
             price = float(price_str)
         except ValueError as e:
@@ -64,17 +49,3 @@ class Kabum:
             return None
 
         return Produto(titulo=title, preco=price)
-
-    # Exibi a lista de produtos analisados
-    def listar_produtos(self):
-        print("\nLista de produtos analisados:")
-        for produto in self.produtos:
-            print(Fore.BLUE + f'Name: {produto.titulo}\nR$:{produto.preco}\n' + Style.RESET_ALL)
-
-    # Retorna a lista de produtos analisados
-    def produtos_analisados(self):
-        if not self.produtos:
-            print('A lista de produtos está vazia.')
-            return False
-        else:
-            return self.produtos

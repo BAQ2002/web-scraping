@@ -1,5 +1,6 @@
-from controller.amazon import Amazon
-from controller.kabum import Kabum
+from controller.amazon import AmazonScraper
+from controller.kabum import KabumScraper
+from view.view import view
 from web_driver_config import WebDriverConfig
 from model.database import DatabaseManager
 
@@ -20,14 +21,16 @@ def analise_de_precos(produtos):
 def main():
     # Inicializa uma lista vazia de produtos
     produtos = []
+    presentation = view()
+    link = presentation.main.values['-LINK-']
 
     # Configura o WebDriver
     driver = WebDriverConfig.config_chromedriver()
     try:
         # Cria uma instância da classe Amazon
-        amazon_scraper = Amazon(driver)
+        amazon_scraper = AmazonScraper(driver)
         # Inicia o scraping de produtos da Amazon
-        amazon_scraper.scrape_products()
+        amazon_scraper.scrape_products(link)
         # Adiciona os produtos da Amazon à lista de produtos
         produtos += amazon_scraper.produtos_analisados() or []
 
@@ -35,9 +38,9 @@ def main():
         driver = WebDriverConfig.config_chromedriver()
 
         # Cria uma instância da classe Kabum
-        kabum_scraper = Kabum(driver)
+        kabum_scraper = KabumScraper(driver)
         # Inicia o scraping de produtos na Kabum
-        kabum_scraper.scrape_products()
+        kabum_scraper.scrape_products(link)
         # Adiciona os produtos da Kabum à lista de produtos
         produtos += kabum_scraper.produtos_analisados() or []
 
